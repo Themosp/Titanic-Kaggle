@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Survival on the Titanic Estimation</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+<!-- Styles for R syntax highlighter -->
+<style type="text/css">
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: rgb(88, 72, 246)
+   }
+
+   pre .number {
+     color: rgb(0, 0, 205);
+   }
+
+   pre .comment {
+     color: rgb(76, 136, 107);
+   }
+
+   pre .keyword {
+     color: rgb(0, 0, 255);
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: rgb(3, 106, 7);
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+</head>
+
+<body>
+<h1>Survival on the Titanic Estimation</h1>
+
+<h1></h1>
+
+<h2>1. Introduction</h2>
+
+<p>This paper attempts to describe the creation of a model which predicts whether a specific passenger on the RMS Titanic is expected to have survived or not, based on a group of passenger characteristics.</p>
+
+<p>The data for this project come from the <a href="http://www.kaggle.com/c/titanic-gettingStarted">&ldquo;Titanic: Machine Learning from Disaster&rdquo;</a> competition on the <a href="http://www.kaggle.com">Kaggle</a> web site. </p>
+
+<p>Due to Kaggle policy, the original data used are only available to Kaggle users. If you would like to reproduce this research, please sign in to Kaggle to download the data to a local folder and make sure to set the working directory accordingly.</p>
+
+<p>We have been provided with a comma separated value file named &#39;train.csv&#39;, which contains a list of 891 records of the RMS Titanic passengers, each record consisting of 12 fields (variables). </p>
+
+<p><strong><strong>VARIABLE DESCRIPTIONS:</strong></strong></p>
+
+<ol>
+<li><strong>PassengerId</strong>  : Passenger&#39;s ID, integer number.</li>
+<li><strong>Survived</strong>     : Survival status (0 = No; 1 = Yes)</li>
+<li><strong>Pclass</strong>       : Passenger&#39;s traveling Class (1 = 1st; 2 = 2nd; 3 = 3rd)</li>
+<li><strong>Name</strong>          : Passenger&#39;s full name</li>
+<li><strong>Sex</strong>           : Passenger&#39;s sex (male/female)</li>
+<li><strong>Age</strong>           : Passenger&#39;s age (in years)</li>
+<li><strong>SibSp</strong>         : Passenger&#39;s number of Siblings/Spouses               Aboard</li>
+<li><strong>Parch</strong>         : Passenger&#39;s number of Parents/Children               Aboard</li>
+<li><strong>Ticket</strong>        : Passenger&#39;s Ticket Number</li>
+<li><strong>Fare</strong>          : Passenger&#39;s Fare</li>
+<li><strong>Cabin</strong>         : Passenger&#39;s Cabin</li>
+<li><strong>Embarked</strong>      : Passenger&#39;s Port of Embarkation (C=Cherbourg; Q=Queenstown; S=Southampton)</li>
+</ol>
+
+<p>In order to measure the success of our chosen model, the outcome of the prediction is going to be compared against a test set and compute the percentage of correct answers (model&#39;s accuracy).</p>
+
+<h2>2. Tools and methodology</h2>
+
+<p>In order to make a prediction, we will be using a classification model. The solution will be developed using <strong><em>R</em></strong>, a well-known programming language for data analysis.</p>
+
+<p>Various classifications algorithms have been implemented in <strong><em>R</em></strong> . The &ldquo;caret&rdquo; package alone, includes almost 150 different models. We will test a number of models, decide which offers the best accuracy and use that model to make our final prediction and submit for evaluation to Kaggle. Our choice contains the following models:</p>
+
+<ol>
+<li>GLM - Generalized Linear model</li>
+<li>RPART - Decision Trees</li>
+<li>RF - Random Forest model</li>
+<li>GBM - Generalized Boosted Regression Model</li>
+<li>LDA - Linear Discriminant Analysis</li>
+<li>NB - Naive Bayes model</li>
+</ol>
+
+<pre><code class="r">#Load the appropriate packages, set the working directory and read the data
+library(caret)
+</code></pre>
+
+<pre><code>## Loading required package: lattice
+## Loading required package: ggplot2
+</code></pre>
+
+<pre><code class="r">library(rpart)
+library(randomForest)
+</code></pre>
+
+<pre><code>## randomForest 4.6-10
+## Type rfNews() to see new features/changes/bug fixes.
+</code></pre>
+
+<pre><code class="r">library(gbm)
+</code></pre>
+
+<pre><code>## Loading required package: survival
+## Loading required package: splines
+## 
+## Attaching package: &#39;survival&#39;
+## 
+## The following object is masked from &#39;package:caret&#39;:
+## 
+##     cluster
+## 
+## Loading required package: parallel
+## Loaded gbm 2.1
+</code></pre>
+
+<pre><code class="r">library(plyr)
+library(MASS)
+library(klaR)
+setwd(&quot;E:/Titanic&quot;)
+titanic &lt;- read.csv(&quot;train.csv&quot;,header=T)
+</code></pre>
+
+<p>Before proceeding with the analysis, we must first choose which variables we are going to use for our prediction. Opening the &#39;train.csv&#39; file with MS EXCEL gives us a first opportunity to inspect the data. Here we use the &#39;head()&#39; R function to display only the first few rows of the data.</p>
+
+<pre><code class="r">#Display the first 6 rows of data
+head(titanic)
+</code></pre>
+
+<pre><code>##   PassengerId Survived Pclass
+## 1           1        0      3
+## 2           2        1      1
+## 3           3        1      3
+## 4           4        1      1
+## 5           5        0      3
+## 6           6        0      3
+##                                                  Name    Sex Age SibSp
+## 1                             Braund, Mr. Owen Harris   male  22     1
+## 2 Cumings, Mrs. John Bradley (Florence Briggs Thayer) female  38     1
+## 3                              Heikkinen, Miss. Laina female  26     0
+## 4        Futrelle, Mrs. Jacques Heath (Lily May Peel) female  35     1
+## 5                            Allen, Mr. William Henry   male  35     0
+## 6                                    Moran, Mr. James   male  NA     0
+##   Parch           Ticket   Fare Cabin Embarked
+## 1     0        A/5 21171  7.250              S
+## 2     0         PC 17599 71.283   C85        C
+## 3     0 STON/O2. 3101282  7.925              S
+## 4     0           113803 53.100  C123        S
+## 5     0           373450  8.050              S
+## 6     0           330877  8.458              Q
+</code></pre>
+
+<p>It is obvious that the <strong>&ldquo;PassgengerId&rdquo;</strong> and the <strong>&ldquo;Name&rdquo;</strong> variables are not of any use in the outcome estimation, so we are going to leave them out. The <strong>&ldquo;Ticket&rdquo;</strong> attribute also falls in the same category, so we are going to leave it out as well. The <strong>&ldquo;Cabin&rdquo;</strong> attribute might be of relative importance, but the &ldquo;Cabin&rdquo; column has too many missing values, so it may not help us. </p>
+
+<p>From the remaining attributes, the <strong>&ldquo;Embarked&rdquo;</strong> attribute does not seem to have any logical connection to a passenger&#39;s chances of survival, except perhaps from the fact that passengers who embarked first might have better knowledge of the ship&#39;s layout and thus better chances to find their way to a lifeboat.</p>
+
+<p>The <strong>&ldquo;SibSp&rdquo;</strong> and <strong>&ldquo;Parch&rdquo;</strong> variables may be related to the survival of a passenger, as a parent might choose to save his/her children first or as children might not be able to find their way to the lifeboats on their own. Moreover, the probability of all the members of a family surviving should be lower for large families. However, as the <strong>&ldquo;SibSp&rdquo;</strong> and the <strong>&ldquo;Parch&rdquo;</strong> variables do not define family relations, they may be of less additional value to our model. Therefore, we should test to see whether their inclusion in the prediction model improves the model&#39;s accuracy.</p>
+
+<p>All the remaining variables seem to have direct connection to the survival rate, as depicted in the following diagram:</p>
+
+<pre><code class="r">par(mfrow=c(2,2))
+plot(titanic$Age,titanic$Sex,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 1: Age vs Sex survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Sex&#39;)
+legend(x=40,y=1.9, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+
+plot(titanic$Age,titanic$Pclass,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 2: Age vs Class survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Boarding Class&#39;)
+legend(x=40,y=2.8, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+
+plot(titanic$Age,titanic$Fare,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 3: Age vs Fare survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Fare Price&#39;)
+legend(&quot;topright&quot;, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk Exploratory Analysis"/> </p>
+
+<p>From the first diagram we may see that there were more female survivors (Sex value=2) than male ones, and that for both sexes, children present a higher survival rate than adults.</p>
+
+<p>In the second diagram, it is obvious that the ratio of survivors is higher for the 1st class passengers, while the fewest survivors were among the 2nd class passengers.</p>
+
+<p>Finally, in the last diagram we notice that as the fare price goes up, the ratio between those who survived and those who did not, changes in favor of those who managed to survive.</p>
+
+<h2>3. Cleaning Data.</h2>
+
+<p>One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very &ldquo;clean&rdquo; form of comma separated values, however, by inspecting the data we can see that there are many missing values in the <strong>&ldquo;Cabin&rdquo;</strong> column as well as some missing values in the <strong>&ldquo;Age&rdquo;</strong> column. Since we have opted not to consider <strong>&ldquo;Cabin&rdquo;</strong> as a variable in our model, we shall leave the column out altogether. On the other hand, <strong>&ldquo;Age&rdquo;</strong> is a significant variable, so we shall use those rows of the data that have values in the <strong>&ldquo;Age&rdquo;</strong> field and eave out only the rows for which <strong>&ldquo;Age&rdquo;</strong> is empty.</p>
+
+<p>We are also going to convert the values of the <strong>&ldquo;Survived&rdquo;</strong>, <strong>&ldquo;Sex&rdquo;</strong> and <strong>&ldquo;Pclass&rdquo;</strong> variables from integers (continuous variables) to &#39;levels&#39; (categorical variables), using the <em>factor</em> data type of <strong>R</strong>.</p>
+
+<pre><code class="r"># Leave the 11th column (Cabin) out
+traindata &lt;- titanic[,-11]
+
+# Create a logical vector of rows which have values in all fields
+compcases &lt;- complete.cases(traindata)
+
+#Keep only the complete rows
+traindata &lt;- traindata[compcases,]
+traindata$Survived &lt;- as.factor(traindata$Survived)
+traindata$Sex &lt;- as.factor(traindata$Sex)
+traindata$Pclass &lt;- as.factor(traindata$Pclass)
+</code></pre>
+
+<h2>4. Splitting data into Training and Test sets</h2>
+
+<p>Before submitting our results for evaluation to Kaggle, we should be able to do some testing in order to choose the best model and the best variable combination. Unfortunately, the test data provided by Kaggle do not include the survivor variable to compare with, so we are going to split the originally available training data into one train and one test set, with a ratio of 70% - 30%. So, we shall use the 70% of the original data to train our models and the 30% to test and evaluate our models. </p>
+
+<pre><code class="r"># Use the same seed number in order to reproduce this analysis
+set.seed(1234)
+
+trainidx &lt;- createDataPartition(y=traindata$PassengerId,p=0.7,list=F)
+ttrn &lt;- traindata[trainidx,]
+ttst &lt;- traindata[-trainidx,]
+</code></pre>
+
+<h2>5. Creating and choosing classifiers</h2>
+
+<p>In this part bwe are going to create out models, train them on the training set, evaluate them on the test set and choose the best model based on the model&#39;s accuracy.</p>
+
+<pre><code class="r">modellist&lt;- data.frame(Accuracy=c(0,0,0,0,0,0), row.names=c(&quot;GLM&quot;,&quot;RPART&quot;,&quot;RF&quot;,&quot;GBM&quot;,&quot;LDA&quot;,&quot;NB&quot;))
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;glm&quot;)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[1,1] &lt;- predcomp$overall[1]
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;rpart&quot;)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[2,1] &lt;- predcomp$overall[1]
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;rf&quot;)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[3,1] &lt;- predcomp$overall[1]
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;gbm&quot;,verbose=F)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[4,1] &lt;- predcomp$overall[1]
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;lda&quot;)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[5,1] &lt;- predcomp$overall[1]
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;nb&quot;)
+pred&lt;- predict(predmod,ttst)
+predcomp&lt;-confusionMatrix(ttst$Survived,pred)
+modellist[6,1] &lt;- predcomp$overall[1]
+
+print(modellist)
+</code></pre>
+
+<pre><code>##       Accuracy
+## GLM     0.7594
+## RPART   0.7642
+## RF      0.8066
+## GBM     0.8019
+## LDA     0.7594
+## NB      0.7642
+</code></pre>
+
+<p>As we see, the <strong>RF</strong> model achieves the highest accuracy (slightly better than the <strong>GBM</strong>), so we will opt for <strong>Random Forest</strong> as a classifier.</p>
+
+<h2>6. Submitting prediction for evaluation</h2>
+
+<p>It is now time to submit our prediction for evaluation at Kaggle. In order to do that, we are going to run our model on the original training data, apply it to the original test data offered by Kaggle, produce a prediction and submit it.</p>
+
+<p>However, we should notice that there are missing values in the test dataset. And if with the training dataset we could omit the rows with null values, here we have to make a prediction for EVERY passenger. In order to achieve that, we must fill in the missing values. We opt to use the <em><strong>mean</strong></em> value of every variable for all the missing values of this variable. </p>
+
+<pre><code class="r">test &lt;- read.csv(&quot;test.csv&quot;,header=T)
+meanage=mean(test$Age,na.rm=TRUE)
+meanfare=mean(test$Fare,na.rm=TRUE)
+for (i in 1:length(test$Age)) {
+  if (is.na(test$Age[i])) {test$Age[i]=meanage}
+  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+}
+predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=traindata,method=&quot;rf&quot;)
+pred&lt;- predict(predmod,test)
+prediction &lt;- data.frame(PassengerId=test$PassengerId,Survived=pred)
+write.table(prediction,&quot;prediction.csv&quot;,row.names=FALSE,sep=&quot;,&quot;,col.names=TRUE)
+</code></pre>
+
+<p>The accuracy achieved was <strong>0.78469</strong> and got a rank of <strong>667</strong>. This is well above the average accuracy (0.77512 / 961), but it cannot be considered adequate. We will have to tune our model to achieve a better ranking.</p>
+
+<h2>7. Model tuning.</h2>
+
+<p>There are a few simple tweaks we could do to achieve better accuracy.</p>
+
+<h3>7.1 Filling in empty values.</h3>
+
+<p>In our first attempt, we left out the rows with empty values either in the <strong>&ldquo;Age&rdquo;</strong> or in the <strong>&ldquo;Fare&rdquo;</strong> fields. However, we had to fill in the empty values in the test dataset. So, perhaps we could use the same method to fill in the training dataset as well, and see how we will do.</p>
+
+<h3>7.2 Variable combination</h3>
+
+<p>As mentioned earlier, the <strong>&ldquo;Embarked&rdquo;</strong>, <strong>&ldquo;Parch&rdquo;</strong> and <strong>&ldquo;SibSp&rdquo;</strong> variables seem not to have great relation to the survival status of a passenger, so we may omit them and see what happens to the model&#39;s accuracy.</p>
+
+<p>We also consider the fact that the fare rate may be closely related to the <strong>&ldquo;Pclass&rdquo;</strong> variable, so when creating our prediction model, we should not only consider the fare value by itself but take into account the relation between the fare and the class as well.</p>
+
+<p>Applying these tweaks, changed our code as follows:</p>
+
+<pre><code class="r">library(caret)
+library(randomForest)
+library(rpart)
+library(gbm)
+library(klaR)
+setwd(&quot;E:/Titanic&quot;)
+titanic &lt;- read.csv(&quot;train.csv&quot;,header=T)
+
+meanage=mean(titanic$Age,na.rm=TRUE)
+meanfare=mean(titanic$Fare,na.rm=TRUE)
+
+for (i in 1:length(titanic$Age)) {
+  if (is.na(titanic$Age[i])) {titanic$Age[i]=meanage}
+  if (is.na(titanic$Fare[i])) {titanic$Fare[i]=meanfare}
+}
+
+titanic$Survived &lt;- as.factor(titanic$Survived)
+titanic$Sex &lt;- as.factor(titanic$Sex)
+titanic$Pclass &lt;- as.factor(titanic$Pclass)
+
+predmod&lt;- train(Survived~Sex+Age+Fare+Fare:Pclass,data=titanic,method=&quot;rf&quot;, verbose=F)
+
+
+test &lt;- read.csv(&quot;test.csv&quot;,header=T)
+
+meanage=mean(test$Age,na.rm=TRUE)
+meanfare=mean(test$Fare,na.rm=TRUE)
+
+for (i in 1:length(test$Age)) {
+  if (is.na(test$Age[i])) {test$Age[i]=meanage}
+  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+}
+
+test$Sex &lt;- as.factor(test$Sex)
+test$Pclass &lt;- as.factor(test$Pclass)
+
+pred&lt;- predict(predmod,test)
+
+prediction &lt;- data.frame(PassengerId=test$PassengerId,Survived=pred)
+write.table(prediction,&quot;prediction.csv&quot;,row.names=FALSE,sep=&quot;,&quot;,col.names=TRUE)
+</code></pre>
+
+<p>The improvement was lower than expected, as the accuracy rose by only 0.00478 to <strong>0.78947</strong>. Still, the ranking went up by 180 places, to <strong>470</strong>.</p>
+
+<p>This may indicate that the model is overfitting the training data, and although it does well on the training dataset, it does not perform as well on the test dataset.</p>
+
+<p>Obviously there is room for further tuning, and other classifiers could also be tested in our effort to improve the model&#39;s accuracy.</p>
+
+<h1></h1>
+
+<p>Created by <strong><strong>Themos Patrikios</strong></strong> as part of the Coursera&#39;s &#39;Introduction to Data Science&#39; course, Aug 2014.</p>
+
+</body>
+
+</html>
+
