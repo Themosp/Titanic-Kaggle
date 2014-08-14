@@ -227,7 +227,7 @@ hljs.initHighlightingOnLoad();
 <li>NB - Naive Bayes model</li>
 </ol>
 
-<pre><code class="r">#Load the appropriate packages, set the working directory and read the data
+<pre><code class="r"># Load the appropriate packages, set the working directory and read the data
 library(caret)
 </code></pre>
 
@@ -239,7 +239,7 @@ library(caret)
 library(randomForest)
 </code></pre>
 
-<pre><code>## randomForest 4.6-10
+<pre><code>## randomForest 4.6-7
 ## Type rfNews() to see new features/changes/bug fixes.
 </code></pre>
 
@@ -263,12 +263,12 @@ library(randomForest)
 library(MASS)
 library(klaR)
 setwd(&quot;E:/Titanic&quot;)
-titanic &lt;- read.csv(&quot;train.csv&quot;,header=T)
+titanic &lt;- read.csv(&quot;train.csv&quot;, header = T)
 </code></pre>
 
 <p>Before proceeding with the analysis, we must first choose which variables we are going to use for our prediction. Opening the &#39;train.csv&#39; file with MS EXCEL gives us a first opportunity to inspect the data. Here we use the &#39;head()&#39; R function to display only the first few rows of the data.</p>
 
-<pre><code class="r">#Display the first 6 rows of data
+<pre><code class="r"># Display the first 6 rows of data
 head(titanic)
 </code></pre>
 
@@ -303,15 +303,21 @@ head(titanic)
 
 <p>All the remaining variables seem to have direct connection to the survival rate, as depicted in the following diagram:</p>
 
-<pre><code class="r">par(mfrow=c(2,2))
-plot(titanic$Age,titanic$Sex,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 1: Age vs Sex survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Sex&#39;)
-legend(x=40,y=1.9, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+<pre><code class="r">par(mfrow = c(2, 2))
+plot(titanic$Age, titanic$Sex, type = &quot;p&quot;, col = c(&quot;red&quot;, &quot;blue&quot;), pch = 19, 
+    main = &quot;Diagram 1: Age vs Sex survival&quot;, xlab = &quot;Age&quot;, ylab = &quot;Sex&quot;)
+legend(x = 40, y = 1.9, legend = c(&quot;Did not Survive&quot;, &quot;Survived&quot;), pch = 19, 
+    col = c(&quot;red&quot;, &quot;blue&quot;))
 
-plot(titanic$Age,titanic$Pclass,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 2: Age vs Class survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Boarding Class&#39;)
-legend(x=40,y=2.8, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+plot(titanic$Age, titanic$Pclass, type = &quot;p&quot;, col = c(&quot;red&quot;, &quot;blue&quot;), pch = 19, 
+    main = &quot;Diagram 2: Age vs Class survival&quot;, xlab = &quot;Age&quot;, ylab = &quot;Boarding Class&quot;)
+legend(x = 40, y = 2.8, legend = c(&quot;Did not Survive&quot;, &quot;Survived&quot;), pch = 19, 
+    col = c(&quot;red&quot;, &quot;blue&quot;))
 
-plot(titanic$Age,titanic$Fare,type=&quot;p&quot;,col=c(&quot;red&quot;,&quot;blue&quot;),pch=19,main=&#39;Diagram 3: Age vs Fare survival&#39;,xlab=&#39;Age&#39;,ylab=&#39;Fare Price&#39;)
-legend(&quot;topright&quot;, legend=c(&quot;Did not Survive&quot;,&quot;Survived&quot;),pch=19,col=c(&quot;red&quot;,&quot;blue&quot;))
+plot(titanic$Age, titanic$Fare, type = &quot;p&quot;, col = c(&quot;red&quot;, &quot;blue&quot;), pch = 19, 
+    main = &quot;Diagram 3: Age vs Fare survival&quot;, xlab = &quot;Age&quot;, ylab = &quot;Fare Price&quot;)
+legend(&quot;topright&quot;, legend = c(&quot;Did not Survive&quot;, &quot;Survived&quot;), pch = 19, col = c(&quot;red&quot;, 
+    &quot;blue&quot;))
 </code></pre>
 
 <p><img src="data:image/png;base64,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" alt="plot of chunk Exploratory Analysis"/> </p>
@@ -324,18 +330,18 @@ legend(&quot;topright&quot;, legend=c(&quot;Did not Survive&quot;,&quot;Survived
 
 <h2>3. Cleaning Data.</h2>
 
-<p>One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very &ldquo;clean&rdquo; form of comma separated values, however, by inspecting the data we can see that there are many missing values in the <strong>&ldquo;Cabin&rdquo;</strong> column as well as some missing values in the <strong>&ldquo;Age&rdquo;</strong> column. Since we have opted not to consider <strong>&ldquo;Cabin&rdquo;</strong> as a variable in our model, we shall leave the column out altogether. On the other hand, <strong>&ldquo;Age&rdquo;</strong> is a significant variable, so we shall use those rows of the data that have values in the <strong>&ldquo;Age&rdquo;</strong> field and eave out only the rows for which <strong>&ldquo;Age&rdquo;</strong> is empty.</p>
+<p>One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very &ldquo;clean&rdquo; form of comma separated values, however, by inspecting the data we can see that there are many missing values in the <strong>&ldquo;Cabin&rdquo;</strong> column as well as some missing values in the <strong>&ldquo;Age&rdquo;</strong> column. Since we have opted not to consider <strong>&ldquo;Cabin&rdquo;</strong> as a variable in our model, we shall leave the column out altogether. On the other hand, <strong>&ldquo;Age&rdquo;</strong> is a significant variable, so we shall use those rows of the data that have values in the <strong>&ldquo;Age&rdquo;</strong> field and leave out only the rows for which <strong>&ldquo;Age&rdquo;</strong> is empty.</p>
 
 <p>We are also going to convert the values of the <strong>&ldquo;Survived&rdquo;</strong>, <strong>&ldquo;Sex&rdquo;</strong> and <strong>&ldquo;Pclass&rdquo;</strong> variables from integers (continuous variables) to &#39;levels&#39; (categorical variables), using the <em>factor</em> data type of <strong>R</strong>.</p>
 
 <pre><code class="r"># Leave the 11th column (Cabin) out
-traindata &lt;- titanic[,-11]
+traindata &lt;- titanic[, -11]
 
 # Create a logical vector of rows which have values in all fields
 compcases &lt;- complete.cases(traindata)
 
-#Keep only the complete rows
-traindata &lt;- traindata[compcases,]
+# Keep only the complete rows
+traindata &lt;- traindata[compcases, ]
 traindata$Survived &lt;- as.factor(traindata$Survived)
 traindata$Sex &lt;- as.factor(traindata$Sex)
 traindata$Pclass &lt;- as.factor(traindata$Pclass)
@@ -348,45 +354,52 @@ traindata$Pclass &lt;- as.factor(traindata$Pclass)
 <pre><code class="r"># Use the same seed number in order to reproduce this analysis
 set.seed(1234)
 
-trainidx &lt;- createDataPartition(y=traindata$PassengerId,p=0.7,list=F)
-ttrn &lt;- traindata[trainidx,]
-ttst &lt;- traindata[-trainidx,]
+trainidx &lt;- createDataPartition(y = traindata$PassengerId, p = 0.7, list = F)
+ttrn &lt;- traindata[trainidx, ]
+ttst &lt;- traindata[-trainidx, ]
 </code></pre>
 
 <h2>5. Creating and choosing classifiers</h2>
 
-<p>In this part bwe are going to create out models, train them on the training set, evaluate them on the test set and choose the best model based on the model&#39;s accuracy.</p>
+<p>In this part we are going to create our models, train them on the training set, evaluate them on the test set and choose the best model based on the model&#39;s accuracy.</p>
 
-<pre><code class="r">modellist&lt;- data.frame(Accuracy=c(0,0,0,0,0,0), row.names=c(&quot;GLM&quot;,&quot;RPART&quot;,&quot;RF&quot;,&quot;GBM&quot;,&quot;LDA&quot;,&quot;NB&quot;))
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;glm&quot;)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[1,1] &lt;- predcomp$overall[1]
+<pre><code class="r">modellist &lt;- data.frame(Accuracy = c(0, 0, 0, 0, 0, 0), row.names = c(&quot;GLM&quot;, 
+    &quot;RPART&quot;, &quot;RF&quot;, &quot;GBM&quot;, &quot;LDA&quot;, &quot;NB&quot;))
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;glm&quot;)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[1, 1] &lt;- predcomp$overall[1]
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;rpart&quot;)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[2,1] &lt;- predcomp$overall[1]
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;rpart&quot;)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[2, 1] &lt;- predcomp$overall[1]
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;rf&quot;)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[3,1] &lt;- predcomp$overall[1]
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;rf&quot;)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[3, 1] &lt;- predcomp$overall[1]
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;gbm&quot;,verbose=F)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[4,1] &lt;- predcomp$overall[1]
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;gbm&quot;, verbose = F)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[4, 1] &lt;- predcomp$overall[1]
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;lda&quot;)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[5,1] &lt;- predcomp$overall[1]
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;lda&quot;)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[5, 1] &lt;- predcomp$overall[1]
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method=&quot;nb&quot;)
-pred&lt;- predict(predmod,ttst)
-predcomp&lt;-confusionMatrix(ttst$Survived,pred)
-modellist[6,1] &lt;- predcomp$overall[1]
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = &quot;nb&quot;)
+pred &lt;- predict(predmod, ttst)
+predcomp &lt;- confusionMatrix(ttst$Survived, pred)
+modellist[6, 1] &lt;- predcomp$overall[1]
 
 print(modellist)
 </code></pre>
@@ -408,17 +421,22 @@ print(modellist)
 
 <p>However, we should notice that there are missing values in the test dataset. And if with the training dataset we could omit the rows with null values, here we have to make a prediction for EVERY passenger. In order to achieve that, we must fill in the missing values. We opt to use the <em><strong>mean</strong></em> value of every variable for all the missing values of this variable. </p>
 
-<pre><code class="r">test &lt;- read.csv(&quot;test.csv&quot;,header=T)
-meanage=mean(test$Age,na.rm=TRUE)
-meanfare=mean(test$Fare,na.rm=TRUE)
+<pre><code class="r">test &lt;- read.csv(&quot;test.csv&quot;, header = T)
+meanage = mean(test$Age, na.rm = TRUE)
+meanfare = mean(test$Fare, na.rm = TRUE)
 for (i in 1:length(test$Age)) {
-  if (is.na(test$Age[i])) {test$Age[i]=meanage}
-  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+    if (is.na(test$Age[i])) {
+        test$Age[i] = meanage
+    }
+    if (is.na(test$Fare[i])) {
+        test$Fare[i] = meanfare
+    }
 }
-predmod&lt;- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=traindata,method=&quot;rf&quot;)
-pred&lt;- predict(predmod,test)
-prediction &lt;- data.frame(PassengerId=test$PassengerId,Survived=pred)
-write.table(prediction,&quot;prediction.csv&quot;,row.names=FALSE,sep=&quot;,&quot;,col.names=TRUE)
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = traindata, 
+    method = &quot;rf&quot;)
+pred &lt;- predict(predmod, test)
+prediction &lt;- data.frame(PassengerId = test$PassengerId, Survived = pred)
+write.table(prediction, &quot;prediction.csv&quot;, row.names = FALSE, sep = &quot;,&quot;, col.names = TRUE)
 </code></pre>
 
 <p>The accuracy achieved was <strong>0.78469</strong> and got a rank of <strong>667</strong>. This is well above the average accuracy (0.77512 / 961), but it cannot be considered adequate. We will have to tune our model to achieve a better ranking.</p>
@@ -445,40 +463,49 @@ library(rpart)
 library(gbm)
 library(klaR)
 setwd(&quot;E:/Titanic&quot;)
-titanic &lt;- read.csv(&quot;train.csv&quot;,header=T)
+titanic &lt;- read.csv(&quot;train.csv&quot;, header = T)
 
-meanage=mean(titanic$Age,na.rm=TRUE)
-meanfare=mean(titanic$Fare,na.rm=TRUE)
+meanage = mean(titanic$Age, na.rm = TRUE)
+meanfare = mean(titanic$Fare, na.rm = TRUE)
 
 for (i in 1:length(titanic$Age)) {
-  if (is.na(titanic$Age[i])) {titanic$Age[i]=meanage}
-  if (is.na(titanic$Fare[i])) {titanic$Fare[i]=meanfare}
+    if (is.na(titanic$Age[i])) {
+        titanic$Age[i] = meanage
+    }
+    if (is.na(titanic$Fare[i])) {
+        titanic$Fare[i] = meanfare
+    }
 }
 
 titanic$Survived &lt;- as.factor(titanic$Survived)
 titanic$Sex &lt;- as.factor(titanic$Sex)
 titanic$Pclass &lt;- as.factor(titanic$Pclass)
 
-predmod&lt;- train(Survived~Sex+Age+Fare+Fare:Pclass,data=titanic,method=&quot;rf&quot;, verbose=F)
+predmod &lt;- train(Survived ~ Sex + Age + Fare + Fare:Pclass, data = titanic, 
+    method = &quot;rf&quot;, verbose = F)
 
 
-test &lt;- read.csv(&quot;test.csv&quot;,header=T)
+test &lt;- read.csv(&quot;test.csv&quot;, header = T)
 
-meanage=mean(test$Age,na.rm=TRUE)
-meanfare=mean(test$Fare,na.rm=TRUE)
+meanage = mean(test$Age, na.rm = TRUE)
+meanfare = mean(test$Fare, na.rm = TRUE)
 
 for (i in 1:length(test$Age)) {
-  if (is.na(test$Age[i])) {test$Age[i]=meanage}
-  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+    if (is.na(test$Age[i])) {
+        test$Age[i] = meanage
+    }
+    if (is.na(test$Fare[i])) {
+        test$Fare[i] = meanfare
+    }
 }
 
 test$Sex &lt;- as.factor(test$Sex)
 test$Pclass &lt;- as.factor(test$Pclass)
 
-pred&lt;- predict(predmod,test)
+pred &lt;- predict(predmod, test)
 
-prediction &lt;- data.frame(PassengerId=test$PassengerId,Survived=pred)
-write.table(prediction,&quot;prediction.csv&quot;,row.names=FALSE,sep=&quot;,&quot;,col.names=TRUE)
+prediction &lt;- data.frame(PassengerId = test$PassengerId, Survived = pred)
+write.table(prediction, &quot;prediction.csv&quot;, row.names = FALSE, sep = &quot;,&quot;, col.names = TRUE)
 </code></pre>
 
 <p>The improvement was lower than expected, as the accuracy rose by only 0.00478 to <strong>0.78947</strong>. Still, the ranking went up by 180 places, to <strong>470</strong>.</p>

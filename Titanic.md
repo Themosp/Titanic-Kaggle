@@ -44,7 +44,7 @@ Various classifications algorithms have been implemented in ***R*** . The "caret
 
 
 ```r
-#Load the appropriate packages, set the working directory and read the data
+# Load the appropriate packages, set the working directory and read the data
 library(caret)
 ```
 
@@ -59,7 +59,7 @@ library(randomForest)
 ```
 
 ```
-## randomForest 4.6-10
+## randomForest 4.6-7
 ## Type rfNews() to see new features/changes/bug fixes.
 ```
 
@@ -86,14 +86,15 @@ library(plyr)
 library(MASS)
 library(klaR)
 setwd("E:/Titanic")
-titanic <- read.csv("train.csv",header=T)
+titanic <- read.csv("train.csv", header = T)
 ```
+
 
 Before proceeding with the analysis, we must first choose which variables we are going to use for our prediction. Opening the 'train.csv' file with MS EXCEL gives us a first opportunity to inspect the data. Here we use the 'head()' R function to display only the first few rows of the data.
 
 
 ```r
-#Display the first 6 rows of data
+# Display the first 6 rows of data
 head(titanic)
 ```
 
@@ -121,6 +122,7 @@ head(titanic)
 ## 6     0           330877  8.458              Q
 ```
 
+
 It is obvious that the **"PassgengerId"** and the **"Name"** variables are not of any use in the outcome estimation, so we are going to leave them out. The **"Ticket"** attribute also falls in the same category, so we are going to leave it out as well. The **"Cabin"** attribute might be of relative importance, but the "Cabin" column has too many missing values, so it may not help us. 
 
 From the remaining attributes, the **"Embarked"** attribute does not seem to have any logical connection to a passenger's chances of survival, except perhaps from the fact that passengers who embarked first might have better knowledge of the ship's layout and thus better chances to find their way to a lifeboat.
@@ -131,18 +133,25 @@ All the remaining variables seem to have direct connection to the survival rate,
 
 
 ```r
-par(mfrow=c(2,2))
-plot(titanic$Age,titanic$Sex,type="p",col=c("red","blue"),pch=19,main='Diagram 1: Age vs Sex survival',xlab='Age',ylab='Sex')
-legend(x=40,y=1.9, legend=c("Did not Survive","Survived"),pch=19,col=c("red","blue"))
+par(mfrow = c(2, 2))
+plot(titanic$Age, titanic$Sex, type = "p", col = c("red", "blue"), pch = 19, 
+    main = "Diagram 1: Age vs Sex survival", xlab = "Age", ylab = "Sex")
+legend(x = 40, y = 1.9, legend = c("Did not Survive", "Survived"), pch = 19, 
+    col = c("red", "blue"))
 
-plot(titanic$Age,titanic$Pclass,type="p",col=c("red","blue"),pch=19,main='Diagram 2: Age vs Class survival',xlab='Age',ylab='Boarding Class')
-legend(x=40,y=2.8, legend=c("Did not Survive","Survived"),pch=19,col=c("red","blue"))
+plot(titanic$Age, titanic$Pclass, type = "p", col = c("red", "blue"), pch = 19, 
+    main = "Diagram 2: Age vs Class survival", xlab = "Age", ylab = "Boarding Class")
+legend(x = 40, y = 2.8, legend = c("Did not Survive", "Survived"), pch = 19, 
+    col = c("red", "blue"))
 
-plot(titanic$Age,titanic$Fare,type="p",col=c("red","blue"),pch=19,main='Diagram 3: Age vs Fare survival',xlab='Age',ylab='Fare Price')
-legend("topright", legend=c("Did not Survive","Survived"),pch=19,col=c("red","blue"))
+plot(titanic$Age, titanic$Fare, type = "p", col = c("red", "blue"), pch = 19, 
+    main = "Diagram 3: Age vs Fare survival", xlab = "Age", ylab = "Fare Price")
+legend("topright", legend = c("Did not Survive", "Survived"), pch = 19, col = c("red", 
+    "blue"))
 ```
 
-![plot of chunk Exploratory Analysis](figure/Exploratory Analysis.png) 
+![plot of chunk Exploratory Analysis](figure/Exploratory_Analysis.png) 
+
 
 From the first diagram we may see that there were more female survivors (Sex value=2) than male ones, and that for both sexes, children present a higher survival rate than adults.
 
@@ -152,24 +161,25 @@ Finally, in the last diagram we notice that as the fare price goes up, the ratio
 
 ## 3. Cleaning Data.
 
-One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very "clean" form of comma separated values, however, by inspecting the data we can see that there are many missing values in the **"Cabin"** column as well as some missing values in the **"Age"** column. Since we have opted not to consider **"Cabin"** as a variable in our model, we shall leave the column out altogether. On the other hand, **"Age"** is a significant variable, so we shall use those rows of the data that have values in the **"Age"** field and eave out only the rows for which **"Age"** is empty.
+One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very "clean" form of comma separated values, however, by inspecting the data we can see that there are many missing values in the **"Cabin"** column as well as some missing values in the **"Age"** column. Since we have opted not to consider **"Cabin"** as a variable in our model, we shall leave the column out altogether. On the other hand, **"Age"** is a significant variable, so we shall use those rows of the data that have values in the **"Age"** field and leave out only the rows for which **"Age"** is empty.
 
 We are also going to convert the values of the **"Survived"**, **"Sex"** and **"Pclass"** variables from integers (continuous variables) to 'levels' (categorical variables), using the *factor* data type of **R**.
 
 
 ```r
 # Leave the 11th column (Cabin) out
-traindata <- titanic[,-11]
+traindata <- titanic[, -11]
 
 # Create a logical vector of rows which have values in all fields
 compcases <- complete.cases(traindata)
 
-#Keep only the complete rows
-traindata <- traindata[compcases,]
+# Keep only the complete rows
+traindata <- traindata[compcases, ]
 traindata$Survived <- as.factor(traindata$Survived)
 traindata$Sex <- as.factor(traindata$Sex)
 traindata$Pclass <- as.factor(traindata$Pclass)
 ```
+
 
 ## 4. Splitting data into Training and Test sets
 
@@ -180,47 +190,55 @@ Before submitting our results for evaluation to Kaggle, we should be able to do 
 # Use the same seed number in order to reproduce this analysis
 set.seed(1234)
 
-trainidx <- createDataPartition(y=traindata$PassengerId,p=0.7,list=F)
-ttrn <- traindata[trainidx,]
-ttst <- traindata[-trainidx,]
+trainidx <- createDataPartition(y = traindata$PassengerId, p = 0.7, list = F)
+ttrn <- traindata[trainidx, ]
+ttst <- traindata[-trainidx, ]
 ```
+
 
 ## 5. Creating and choosing classifiers
 
-In this part bwe are going to create out models, train them on the training set, evaluate them on the test set and choose the best model based on the model's accuracy.
+In this part we are going to create our models, train them on the training set, evaluate them on the test set and choose the best model based on the model's accuracy.
 
 
 ```r
-modellist<- data.frame(Accuracy=c(0,0,0,0,0,0), row.names=c("GLM","RPART","RF","GBM","LDA","NB"))
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="glm")
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[1,1] <- predcomp$overall[1]
+modellist <- data.frame(Accuracy = c(0, 0, 0, 0, 0, 0), row.names = c("GLM", 
+    "RPART", "RF", "GBM", "LDA", "NB"))
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "glm")
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[1, 1] <- predcomp$overall[1]
 
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="rpart")
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[2,1] <- predcomp$overall[1]
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "rpart")
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[2, 1] <- predcomp$overall[1]
 
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="rf")
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[3,1] <- predcomp$overall[1]
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "rf")
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[3, 1] <- predcomp$overall[1]
 
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="gbm",verbose=F)
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[4,1] <- predcomp$overall[1]
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "gbm", verbose = F)
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[4, 1] <- predcomp$overall[1]
 
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="lda")
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[5,1] <- predcomp$overall[1]
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "lda")
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[5, 1] <- predcomp$overall[1]
 
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=ttrn,method="nb")
-pred<- predict(predmod,ttst)
-predcomp<-confusionMatrix(ttst$Survived,pred)
-modellist[6,1] <- predcomp$overall[1]
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = ttrn, 
+    method = "nb")
+pred <- predict(predmod, ttst)
+predcomp <- confusionMatrix(ttst$Survived, pred)
+modellist[6, 1] <- predcomp$overall[1]
 
 print(modellist)
 ```
@@ -235,6 +253,7 @@ print(modellist)
 ## NB      0.7642
 ```
 
+
 As we see, the **RF** model achieves the highest accuracy (slightly better than the **GBM**), so we will opt for **Random Forest** as a classifier.
 
 ## 6. Submitting prediction for evaluation
@@ -245,18 +264,24 @@ However, we should notice that there are missing values in the test dataset. And
 
 
 ```r
-test <- read.csv("test.csv",header=T)
-meanage=mean(test$Age,na.rm=TRUE)
-meanfare=mean(test$Fare,na.rm=TRUE)
+test <- read.csv("test.csv", header = T)
+meanage = mean(test$Age, na.rm = TRUE)
+meanfare = mean(test$Fare, na.rm = TRUE)
 for (i in 1:length(test$Age)) {
-  if (is.na(test$Age[i])) {test$Age[i]=meanage}
-  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+    if (is.na(test$Age[i])) {
+        test$Age[i] = meanage
+    }
+    if (is.na(test$Fare[i])) {
+        test$Fare[i] = meanfare
+    }
 }
-predmod<- train(Survived~Sex+Age+Fare+Parch+SibSp+Embarked,data=traindata,method="rf")
-pred<- predict(predmod,test)
-prediction <- data.frame(PassengerId=test$PassengerId,Survived=pred)
-write.table(prediction,"prediction.csv",row.names=FALSE,sep=",",col.names=TRUE)
+predmod <- train(Survived ~ Sex + Age + Fare + Parch + SibSp + Embarked, data = traindata, 
+    method = "rf")
+pred <- predict(predmod, test)
+prediction <- data.frame(PassengerId = test$PassengerId, Survived = pred)
+write.table(prediction, "prediction.csv", row.names = FALSE, sep = ",", col.names = TRUE)
 ```
+
 
 The accuracy achieved was **0.78469** and got a rank of **667**. This is well above the average accuracy (0.77512 / 961), but it cannot be considered adequate. We will have to tune our model to achieve a better ranking.
 
@@ -283,41 +308,51 @@ library(rpart)
 library(gbm)
 library(klaR)
 setwd("E:/Titanic")
-titanic <- read.csv("train.csv",header=T)
+titanic <- read.csv("train.csv", header = T)
 
-meanage=mean(titanic$Age,na.rm=TRUE)
-meanfare=mean(titanic$Fare,na.rm=TRUE)
+meanage = mean(titanic$Age, na.rm = TRUE)
+meanfare = mean(titanic$Fare, na.rm = TRUE)
 
 for (i in 1:length(titanic$Age)) {
-  if (is.na(titanic$Age[i])) {titanic$Age[i]=meanage}
-  if (is.na(titanic$Fare[i])) {titanic$Fare[i]=meanfare}
+    if (is.na(titanic$Age[i])) {
+        titanic$Age[i] = meanage
+    }
+    if (is.na(titanic$Fare[i])) {
+        titanic$Fare[i] = meanfare
+    }
 }
 
 titanic$Survived <- as.factor(titanic$Survived)
 titanic$Sex <- as.factor(titanic$Sex)
 titanic$Pclass <- as.factor(titanic$Pclass)
 
-predmod<- train(Survived~Sex+Age+Fare+Fare:Pclass,data=titanic,method="rf", verbose=F)
+predmod <- train(Survived ~ Sex + Age + Fare + Fare:Pclass, data = titanic, 
+    method = "rf", verbose = F)
 
 
-test <- read.csv("test.csv",header=T)
+test <- read.csv("test.csv", header = T)
 
-meanage=mean(test$Age,na.rm=TRUE)
-meanfare=mean(test$Fare,na.rm=TRUE)
+meanage = mean(test$Age, na.rm = TRUE)
+meanfare = mean(test$Fare, na.rm = TRUE)
 
 for (i in 1:length(test$Age)) {
-  if (is.na(test$Age[i])) {test$Age[i]=meanage}
-  if (is.na(test$Fare[i])) {test$Fare[i]=meanfare}
+    if (is.na(test$Age[i])) {
+        test$Age[i] = meanage
+    }
+    if (is.na(test$Fare[i])) {
+        test$Fare[i] = meanfare
+    }
 }
 
 test$Sex <- as.factor(test$Sex)
 test$Pclass <- as.factor(test$Pclass)
 
-pred<- predict(predmod,test)
+pred <- predict(predmod, test)
 
-prediction <- data.frame(PassengerId=test$PassengerId,Survived=pred)
-write.table(prediction,"prediction.csv",row.names=FALSE,sep=",",col.names=TRUE)
+prediction <- data.frame(PassengerId = test$PassengerId, Survived = pred)
+write.table(prediction, "prediction.csv", row.names = FALSE, sep = ",", col.names = TRUE)
 ```
+
 
 The improvement was lower than expected, as the accuracy rose by only 0.00478 to **0.78947**. Still, the ranking went up by 180 places, to **470**.
 

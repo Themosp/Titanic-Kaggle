@@ -90,7 +90,7 @@ Finally, in the last diagram we notice that as the fare price goes up, the ratio
 
 ## 3. Cleaning Data.
 
-One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very "clean" form of comma separated values, however, by inspecting the data we can see that there are many missing values in the **"Cabin"** column as well as some missing values in the **"Age"** column. Since we have opted not to consider **"Cabin"** as a variable in our model, we shall leave the column out altogether. On the other hand, **"Age"** is a significant variable, so we shall use those rows of the data that have values in the **"Age"** field and eave out only the rows for which **"Age"** is empty.
+One of the most important aspects of data analysis is the data cleaning. In our case, data have come in a very "clean" form of comma separated values, however, by inspecting the data we can see that there are many missing values in the **"Cabin"** column as well as some missing values in the **"Age"** column. Since we have opted not to consider **"Cabin"** as a variable in our model, we shall leave the column out altogether. On the other hand, **"Age"** is a significant variable, so we shall use those rows of the data that have values in the **"Age"** field and leave out only the rows for which **"Age"** is empty.
 
 We are also going to convert the values of the **"Survived"**, **"Sex"** and **"Pclass"** variables from integers (continuous variables) to 'levels' (categorical variables), using the *factor* data type of **R**.
 
@@ -123,7 +123,7 @@ ttst <- traindata[-trainidx,]
 
 ## 5. Creating and choosing classifiers
 
-In this part bwe are going to create out models, train them on the training set, evaluate them on the test set and choose the best model based on the model's accuracy.
+In this part we are going to create our models, train them on the training set, evaluate them on the test set and choose the best model based on the model's accuracy.
 
 ```{r 'Choosing the best classifier', warning=FALSE}
 modellist<- data.frame(Accuracy=c(0,0,0,0,0,0), row.names=c("GLM","RPART","RF","GBM","LDA","NB"))
